@@ -12,7 +12,6 @@ interface OrderInfoProps {
     paymentMode: string;
     deliveryDate: string;
     orderDate: string;
-    status: string;
   };
 }
 
@@ -49,7 +48,6 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
     doc.text(`Mode de paiement: ${order.paymentMode}`, 20, 50);
     doc.text(`Date de livraison: ${order.deliveryDate}`, 20, 60);
     doc.text(`Date de la commande: ${order.orderDate}`, 20, 70);
-    doc.text(`Status: ${order.status}`, 20, 80);
 
     // Save the generated PDF file with a custom name
     doc.save(`facture_${order.id}.pdf`);
@@ -63,13 +61,6 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
           Commande N°: <span className="text-pink-900 font-bold">{order.id}</span>
         </h2>
         <button className="text-gray-600 text-2xl font-bold">&times;</button>
-      </div>
-
-      <div className="flex gap-2 mt-2">
-        <p className="text-gray-500">Status:</p>
-        <span className="inline-flex gap-2 items-center justify-center p-2 w-40 text-center rounded-full bg-orange-200 text-orange-800">
-          {order.status} <Clock className="h-5 w-5 text-orange-600 " />
-        </span>
       </div>
 
       {/* Order Dates & Payment */}
