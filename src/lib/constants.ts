@@ -13,4 +13,5 @@ export const pageRoutes = [
   { title: "Gestion des utilisateurs", route: "/users", icon: Users2 },
   { title: "Produits archivés", route: "/archive", icon: FolderArchive },
   { title: "Paramètres", route: "/settings", icon: Settings },
+  
 ];

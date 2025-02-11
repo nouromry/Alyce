@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import { FaEdit } from "react-icons/fa"; // Using react-icons for the edit icon
-import { Clock } from "lucide-react";
-import { jsPDF } from "jspdf"; // Import jsPDF for generating PDFs
-import { Download } from "lucide-react";
+'use client';
+
+import React, { useState } from 'react';
+import { FaEdit } from 'react-icons/fa'; // Using react-icons for the edit icon
+import { Clock } from 'lucide-react';
+import { jsPDF } from 'jspdf'; // Import jsPDF for generating PDFs
+import { Download, CheckCircle } from 'lucide-react';
+
 interface OrderInfoProps {
   order: {
     id: string;
@@ -17,31 +20,27 @@ interface OrderInfoProps {
 }
 
 const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
-  // State for managing the form input and visibility
   const [isEditing, setIsEditing] = useState(false);
   const [updatedAddress, setUpdatedAddress] = useState(order.address);
   const [updatedPhone, setUpdatedPhone] = useState(order.phone);
 
   const handleEditClick = () => {
-    setIsEditing(!isEditing); // Toggle edit mode
+    setIsEditing(!isEditing);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here, you would usually send the updated info to the backend
-    console.log("Updated Address:", updatedAddress);
-    console.log("Updated Phone:", updatedPhone);
-    setIsEditing(false); // Close the form after submission
+    console.log('Updated Address:', updatedAddress);
+    console.log('Updated Phone:', updatedPhone);
+    setIsEditing(false);
   };
 
   const handleCloseModal = () => {
-    setIsEditing(false); // Close the modal
+    setIsEditing(false);
   };
 
   const handleDownloadInvoice = () => {
     const doc = new jsPDF();
-
-    // Add the order details to the PDF
     doc.text(`Commande N°: ${order.id}`, 20, 10);
     doc.text(`Client: ${order.client}`, 20, 20);
     doc.text(`Adresse: ${order.address}`, 20, 30);
@@ -50,8 +49,6 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
     doc.text(`Date de livraison: ${order.deliveryDate}`, 20, 60);
     doc.text(`Date de la commande: ${order.orderDate}`, 20, 70);
     doc.text(`Status: ${order.status}`, 20, 80);
-
-    // Save the generated PDF file with a custom name
     doc.save(`facture_${order.id}.pdf`);
   };
 
@@ -65,49 +62,78 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
         <button className="text-gray-600 text-2xl font-bold">&times;</button>
       </div>
 
+      {/* Status */}
       <div className="flex gap-2 mt-2">
         <p className="text-gray-500">Status:</p>
-        <span className="inline-flex gap-2 items-center justify-center p-2 w-40 text-center rounded-full bg-orange-200 text-orange-800">
-          {order.status} <Clock className="h-5 w-5 text-orange-600 " />
+        <span
+          className={`inline-flex gap-2 items-center justify-center p-2 w-40 text-center rounded-full ${
+            order.status === 'Livrée'
+              ? 'bg-green-200 text-green-800'
+              : order.status === 'En cours'
+              ? 'bg-orange-200 text-orange-800'
+              : 'bg-red-200 text-red-800'
+          }`}
+        >
+          {order.status}
+          {order.status === 'Livrée' ? (
+            <CheckCircle className="h-5 w-5 text-green-600" />
+          ) : order.status === 'En cours' ? (
+            <Clock className="h-5 w-5 text-orange-600" />
+          ) : (
+            <Clock className="h-5 w-5 text-red-600" />
+          )}
         </span>
       </div>
 
       {/* Order Dates & Payment */}
-      <div className="flex justify-between items-start mt-4">
+      <div className="flex flex-col md:flex-row justify-between items-start mt-4 gap-6">
         {/* Order Details (Left Side) */}
-        <div className="grid grid-cols-2 gap-1 text-sm text-gray-700">
-          <div className="grid grid-cols-2 gap-4 text-sm ">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="font-semibold text-gray-400">Date de livraison</p>
-              <p className="text-lg text-black">{order.deliveryDate}</p>
-              <p className="font-semibold text-gray-400">Date de la commande</p>
-              <p className="text-lg text-black">{order.orderDate}</p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="text-lg font-semibold">{order.client}</p>
-              <p className=" text-gray-500">{order.address}</p>
-              <p className=" text-gray-500">{order.phone}</p>
-              <p className="font-semibold text-gray-500">Mode de paiement :</p>
-              <p className="text-lg text-black">{order.paymentMode}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <p className="font-semibold text-gray-400">Date de livraison</p>
+            <input
+              type="text"
+              value={order.deliveryDate}
+              readOnly
+              className="text-lg font-semibold text-[#8B827F] bg-gray-50 border-none w-full sm:w-[253px] h-[44px]"
+            />
+            <p className="font-semibold text-gray-400 mt-4">Date de la commande</p>
+            <input
+              type="text"
+              value={order.orderDate}
+              readOnly
+              className="text-lg font-semibold text-[#333843] bg-gray-50 border-none w-full sm:w-[253px] h-[44px]"
+            />
+          </div>
 
-              {/* Modify Icon for Address and Phone */}
-              <div className="flex justify-between items-center mt-2">
-                <FaEdit
-                  className="cursor-pointer text-pink-600 text-2xl"
-                  onClick={handleEditClick}
-                />
-              </div>
+          {/* Client Information */}
+          <div className="p-4 bg-gray-50 rounded-lg w-full">
+            <p className="text-lg font-semibold">{order.client}</p>
+            <p className="text-gray-500">{updatedAddress}</p>
+            <p className="text-gray-500">{updatedPhone}</p>
+            <p className="font-semibold text-gray-500">Mode de paiement :</p>
+            <p className="text-lg text-black">{order.paymentMode}</p>
+
+            {/* Edit Icon */}
+            <div className="flex justify-between items-center mt-2 w-full">
+              <FaEdit
+                className="cursor-pointer text-pink-600 text-2xl"
+                onClick={handleEditClick}
+              />
             </div>
           </div>
         </div>
 
-        {/* Action Buttons (Right Side) */}
-        <div className="flex flex-col space-y-4 w-1/3 mr-6">
-  <button className="bg-pink-900 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-pink-950">
-    <Download className="h-5 w-5" /> {/* Download icon */}
-    Télécharger la facture
-  </button>
-</div>
+        {/* Action Buttons */}
+        <div className="flex flex-col space-y-4 w-full sm:w-1/3">
+          <button
+            className="bg-pink-900 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-pink-950 w-full sm:w-[253px] h-[44px]"
+            onClick={handleDownloadInvoice}
+          >
+            <Download className="h-5 w-5" /> {/* Download icon */}
+            Télécharger la facture
+          </button>
+        </div>
       </div>
 
       {/* Modal for editing address and phone */}
@@ -124,7 +150,7 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
                   type="text"
                   value={updatedAddress}
                   onChange={(e) => setUpdatedAddress(e.target.value)}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full sm:w-[253px] h-[44px] p-2 border rounded-md"
                 />
               </div>
               <div>
@@ -133,7 +159,7 @@ const OrderInfo: React.FC<OrderInfoProps> = ({ order }) => {
                   type="text"
                   value={updatedPhone}
                   onChange={(e) => setUpdatedPhone(e.target.value)}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full sm:w-[253px] h-[44px] p-2 border rounded-md"
                 />
               </div>
               <div className="flex justify-end space-x-4">

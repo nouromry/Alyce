@@ -1,5 +1,5 @@
-// src/app/(dashboard)/orders/components/OrdersPageClient.tsx
 "use client";
+
 import React, { useState } from "react";
 import Header from "@/app/(dashboard)/orders/components/Header";
 import OrdersTable from "@/app/(dashboard)/orders/components/OrdersTable";
@@ -16,8 +16,8 @@ export default function OrdersPageClient() {
   );
 
   return (
-<main className="w-full mx-auto max-w-5xl flex flex-col justify-start  border border-primary p-8 gap-6 my-4 mf-8">
-<Header search={search} setSearch={setSearch} filterStatus={filterStatus} setFilterStatus={setFilterStatus} />
+    <main className="w-full mx-auto max-w-5xl flex flex-col justify-start  border border-primary p-8 gap-6 my-4 mf-8">
+      <Header search={search} setSearch={setSearch} filterStatus={filterStatus} setFilterStatus={setFilterStatus} />
       <h3 className="text-xl font-bold text-quinary">Suivi des commandes</h3>
       <OrdersTable filteredOrders={filteredOrders} />
     </main>
